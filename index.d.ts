@@ -1,7 +1,7 @@
 export interface Result {
     flag: boolean;
     message: string;
-    info: any;
+    info?: any;
 }
 export declare class DB {
     private connection;
@@ -14,7 +14,7 @@ export declare class DB {
     orWhere(obj: any): this;
     orderBy(obj: any): this;
     transaction(func: () => void): Promise<Result>;
-    get(): Promise<Result | any[]>;
+    get(): Promise<Result>;
     delete(): Promise<Result>;
     update(obj: any): Promise<Result>;
     add(rows: any[]): Promise<Result>;

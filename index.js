@@ -117,7 +117,7 @@ var DB = /** @class */ (function () {
                                 try {
                                     func;
                                     _this.connection.commit();
-                                    resolve({ flag: true, message: 'Transaction committed.', info: null });
+                                    resolve({ flag: true, message: 'Transaction committed.' });
                                 }
                                 catch (err) {
                                     _this.connection.rollback(function () {
@@ -146,7 +146,7 @@ var DB = /** @class */ (function () {
                                     var item = __rest(row, []);
                                     data_1.push(item);
                                 });
-                                resolve(data_1);
+                                resolve({ flag: true, message: 'The query is successful.', info: data_1 });
                             }
                         });
                     })];
@@ -164,7 +164,7 @@ var DB = /** @class */ (function () {
                                 reject({ flag: true, message: 'Delete is failed.', info: err });
                             }
                             else {
-                                resolve({ flag: true, message: 'Delete is successful.', info: null });
+                                resolve({ flag: true, message: 'Delete is successful.' });
                             }
                         });
                     })];
@@ -182,7 +182,7 @@ var DB = /** @class */ (function () {
                                 reject({ flag: true, message: 'Update is failed.', info: err });
                             }
                             else {
-                                resolve({ flag: true, message: 'Update is successful.', info: null });
+                                resolve({ flag: true, message: 'Update is successful.' });
                             }
                         });
                     })];
@@ -226,7 +226,7 @@ var DB = /** @class */ (function () {
                                 reject({ flag: true, message: 'connection close failed.', info: err });
                             }
                             else {
-                                resolve({ flag: true, message: 'connection closed.', info: null });
+                                resolve({ flag: true, message: 'connection closed.' });
                             }
                         });
                     })];
