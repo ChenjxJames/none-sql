@@ -1,14 +1,18 @@
 {
-  "name": "none-sql",
-  "version": "1.0.5",
-  "description": "Connect to mysql as promise.",
+  "name": "none-sql-dev",
+  "version": "1.0.0",
+  "description": "",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
+    "build": "tsc & copy \"readme.md\" \"./dist/\"",
+    "test": "tsc & copy \"readme.md\" \"./dist/\" && node ./dist/test/test.js",
+    "test-pool": "tsc & copy \"readme.md\" \"./dist/\" && node ./dist/test/test_pool.js"
   },
   "author": "",
-  "license": "MIT",
+  "license": "ISC",
   "dependencies": {
+    "@types/mysql": "^2.15.7",
     "mysql": "^2.17.1"
   }
 }

@@ -1,0 +1,19 @@
+{
+  "name": "none-sql",
+  "version": "1.1.0",
+  "description": "Connect to mysql as promise.",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+  },
+  "keywords": [
+    "mysql",
+    "Promise",
+    "koa2"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "mysql": "^2.17.1"
+  }
+}

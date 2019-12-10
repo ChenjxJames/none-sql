@@ -1,4 +1,17 @@
 "use strict";
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -50,27 +63,20 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var mysql_1 = __importDefault(require("mysql"));
-var DB = /** @class */ (function () {
-    function DB(database, user, password, host) {
-        if (host === void 0) { host = 'localhost'; }
-        this.connection = mysql_1.default.createConnection({
-            host: host,
-            user: user,
-            password: password,
-            database: database
-        });
-        this.connection.connect();
+var Connection = (function () {
+    function Connection(connection) {
+        this.connection = connection;
         this.tableName = '';
         this.sqlStrWhere = '';
         this.sqlStrOrderBy = '';
     }
-    DB.prototype.connect = function (tableName) {
+    Connection.prototype.connect = function (tableName) {
         this.sqlStrWhere = '';
         this.sqlStrOrderBy = '';
         this.tableName = tableName;
         return this;
     };
-    DB.prototype.where = function (obj) {
+    Connection.prototype.where = function (obj) {
         this.sqlStrWhere = ' WHERE (';
         if (Object.keys(obj).length) {
             for (var key in obj) {
@@ -82,7 +88,7 @@ var DB = /** @class */ (function () {
         }
         return this;
     };
-    DB.prototype.orWhere = function (obj) {
+    Connection.prototype.orWhere = function (obj) {
         if (Object.keys(obj).length && this.sqlStrWhere) {
             this.sqlStrWhere += ' OR (';
             for (var key in obj) {
@@ -94,7 +100,7 @@ var DB = /** @class */ (function () {
         }
         return this;
     };
-    DB.prototype.orderBy = function (obj) {
+    Connection.prototype.orderBy = function (obj) {
         if (Object.keys(obj).length) {
             this.sqlStrOrderBy = ' ORDER BY ';
             for (var key in obj) {
@@ -104,11 +110,11 @@ var DB = /** @class */ (function () {
         }
         return this;
     };
-    DB.prototype.transaction = function (func) {
+    Connection.prototype.transaction = function (func) {
         return __awaiter(this, void 0, void 0, function () {
             var _this = this;
             return __generator(this, function (_a) {
-                return [2 /*return*/, new Promise(function (resolve, reject) {
+                return [2, new Promise(function (resolve, reject) {
                         _this.connection.beginTransaction(function (transactionErr) {
                             if (transactionErr) {
                                 reject({ flag: true, message: 'The transaction is failed.', info: transactionErr });
@@ -130,11 +136,11 @@ var DB = /** @class */ (function () {
             });
         });
     };
-    DB.prototype.get = function () {
+    Connection.prototype.get = function () {
         return __awaiter(this, void 0, void 0, function () {
             var _this = this;
             return __generator(this, function (_a) {
-                return [2 /*return*/, new Promise(function (resolve, reject) {
+                return [2, new Promise(function (resolve, reject) {
                         var sql = "SELECT * FROM ?? " + _this.sqlStrWhere + _this.sqlStrOrderBy;
                         _this.connection.query(sql, [_this.tableName], function (err, rows, fields) {
                             if (err) {
@@ -153,11 +159,11 @@ var DB = /** @class */ (function () {
             });
         });
     };
-    DB.prototype.delete = function () {
+    Connection.prototype.delete = function () {
         return __awaiter(this, void 0, void 0, function () {
             var _this = this;
             return __generator(this, function (_a) {
-                return [2 /*return*/, new Promise(function (resolve, reject) {
+                return [2, new Promise(function (resolve, reject) {
                         var sql = "DELETE FROM ?? " + _this.sqlStrWhere;
                         _this.connection.query(sql, [_this.tableName], function (err, rows, fields) {
                             if (err) {
@@ -171,11 +177,11 @@ var DB = /** @class */ (function () {
             });
         });
     };
-    DB.prototype.update = function (obj) {
+    Connection.prototype.update = function (obj) {
         return __awaiter(this, void 0, void 0, function () {
             var _this = this;
             return __generator(this, function (_a) {
-                return [2 /*return*/, new Promise(function (resolve, reject) {
+                return [2, new Promise(function (resolve, reject) {
                         var sql = "UPDATE ?? SET ?" + _this.sqlStrWhere;
                         _this.connection.query(sql, [_this.tableName, obj], function (err, rows, fields) {
                             if (err) {
@@ -189,7 +195,7 @@ var DB = /** @class */ (function () {
             });
         });
     };
-    DB.prototype.add = function (rows) {
+    Connection.prototype.add = function (rows) {
         return __awaiter(this, void 0, void 0, function () {
             var keys, rowValues, sql, _i, rows_1, row;
             var _this = this;
@@ -203,7 +209,7 @@ var DB = /** @class */ (function () {
                     rowValues.push(Object.values(row));
                 }
                 sql = sql.slice(0, -1);
-                return [2 /*return*/, new Promise(function (resolve, reject) {
+                return [2, new Promise(function (resolve, reject) {
                         _this.connection.query(sql, [_this.tableName, keys].concat(rowValues), function (err, results, fields) {
                             if (err) {
                                 reject({ flag: true, message: 'Add data is failed.', info: err });
@@ -216,17 +222,34 @@ var DB = /** @class */ (function () {
             });
         });
     };
+    return Connection;
+}());
+var DB = (function (_super) {
+    __extends(DB, _super);
+    function DB(database, user, password, host, isPoolConnect) {
+        if (host === void 0) { host = 'localhost'; }
+        if (isPoolConnect === void 0) { isPoolConnect = false; }
+        var _this = _super.call(this) || this;
+        _this.connection = mysql_1.default.createConnection({
+            host: host,
+            user: user,
+            password: password,
+            database: database
+        });
+        _this.connection.connect();
+        return _this;
+    }
     DB.prototype.close = function () {
         return __awaiter(this, void 0, void 0, function () {
             var _this = this;
             return __generator(this, function (_a) {
-                return [2 /*return*/, new Promise(function (resolve, reject) {
+                return [2, new Promise(function (resolve, reject) {
                         _this.connection.end(function (err) {
                             if (err) {
-                                reject({ flag: true, message: 'connection close failed.', info: err });
+                                reject({ flag: true, message: 'Connection close failed.', info: err });
                             }
                             else {
-                                resolve({ flag: true, message: 'connection closed.' });
+                                resolve({ flag: true, message: 'Connection closed.' });
                             }
                         });
                     })];
@@ -234,5 +257,51 @@ var DB = /** @class */ (function () {
         });
     };
     return DB;
-}());
+}(Connection));
 exports.DB = DB;
+var Pool = (function (_super) {
+    __extends(Pool, _super);
+    function Pool(database, user, password, host, connectionLimit) {
+        if (host === void 0) { host = 'localhost'; }
+        if (connectionLimit === void 0) { connectionLimit = 10; }
+        var _this = _super.call(this) || this;
+        _this.pool = mysql_1.default.createPool({
+            connectionLimit: connectionLimit,
+            host: host,
+            user: user,
+            password: password,
+            database: database
+        });
+        return _this;
+    }
+    Pool.prototype.getConnection = function () {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            _this.pool.getConnection(function (err, connection) {
+                if (err) {
+                    reject(err);
+                }
+                resolve(new Connection(connection));
+            });
+        });
+    };
+    Pool.prototype.close = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var _this = this;
+            return __generator(this, function (_a) {
+                return [2, new Promise(function (resolve, reject) {
+                        _this.pool.end(function (err) {
+                            if (err) {
+                                reject({ flag: true, message: 'Connection close failed.', info: err });
+                            }
+                            else {
+                                resolve({ flag: true, message: 'Connection closed.' });
+                            }
+                        });
+                    })];
+            });
+        });
+    };
+    return Pool;
+}(Connection));
+exports.Pool = Pool;
