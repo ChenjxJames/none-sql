@@ -9,8 +9,20 @@
     "test": "tsc & copy \"readme.md\" \"./dist/\" && node ./dist/test/test.js",
     "test-pool": "tsc & copy \"readme.md\" \"./dist/\" && node ./dist/test/test_pool.js"
   },
-  "author": "",
-  "license": "ISC",
+  "author": {
+    "name" : "James Chen", 
+    "email" : "james@chenjx.com.cn", 
+    "url" : "http://chenjianxiong.cn/" 
+  },
+  "repository": { 
+    "type" : "git", 
+    "url" : "git+https://github.com/ChenjxJames/none-sql.git"
+  },
+  "homepage": "https://github.com/ChenjxJames/none-sql",
+  "bugs": {
+    "url": "https://github.com/ChenjxJames/none-sql/issues"
+  },
+  "license": "MIT",
   "dependencies": {
     "@types/mysql": "^2.15.7",
     "mysql": "^2.17.1"
