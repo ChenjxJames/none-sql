@@ -101,6 +101,18 @@
   })
   ```
 
+* 执行自定义sql语句
+  ```javascript
+  let sql = 'SELECT * FROM ?? WHERE ??=?';
+  db.query(sql,['users','name','james']);
+  ```
+  相当于执行了
+  ```SQL
+  SELECT * FROM `users` WHERE `name`="james"
+  ```
+  ?? 会自动在参数两侧添加反引号``  
+  ?  会自动在参数两侧添加双引号""
+
 * <span id="koa2-mysql">在koa2中使用</span>  
   入口文件  
   index.ts

@@ -13,10 +13,11 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
@@ -58,6 +59,13 @@ var __rest = (this && this.__rest) || function (s, e) {
         }
     return t;
 };
+var __spreadArrays = (this && this.__spreadArrays) || function () {
+    for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
+    for (var r = Array(s), k = 0, i = 0; i < il; i++)
+        for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
+            r[k] = a[j];
+    return r;
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -84,7 +92,7 @@ var Connection = (function () {
             }
             this.sqlStrWhere = this.sqlStrWhere.slice(0, -4);
             this.sqlStrWhere += ')';
-            this.sqlStrWhere = mysql_1.default.format(this.sqlStrWhere, Object.values(obj).slice());
+            this.sqlStrWhere = mysql_1.default.format(this.sqlStrWhere, __spreadArrays(Object.values(obj)));
         }
         return this;
     };
@@ -96,7 +104,7 @@ var Connection = (function () {
             }
             this.sqlStrWhere = this.sqlStrWhere.slice(0, -4);
             this.sqlStrWhere += ')';
-            this.sqlStrWhere = mysql_1.default.format(this.sqlStrWhere, Object.values(obj).slice());
+            this.sqlStrWhere = mysql_1.default.format(this.sqlStrWhere, __spreadArrays(Object.values(obj)));
         }
         return this;
     };
@@ -197,7 +205,7 @@ var Connection = (function () {
                     rowValues.push(Object.values(row));
                 }
                 sql = sql.slice(0, -1);
-                return [2, this.query(sql, [this.tableName, keys].concat(rowValues))];
+                return [2, this.query(sql, __spreadArrays([this.tableName, keys], rowValues))];
             });
         });
     };
@@ -227,9 +235,7 @@ var DB = (function (_super) {
                             if (err) {
                                 reject({ flag: false, message: 'Connection close failed.', info: err });
                             }
-                            else {
-                                resolve({ flag: true, message: 'Connection closed.' });
-                            }
+                            resolve({ flag: true, message: 'Connection closed.' });
                         });
                     })];
             });
@@ -273,9 +279,7 @@ var Pool = (function (_super) {
                             if (err) {
                                 reject({ flag: false, message: 'Connection close failed.', info: err });
                             }
-                            else {
-                                resolve({ flag: true, message: 'Connection closed.' });
-                            }
+                            resolve({ flag: true, message: 'Connection closed.' });
                         });
                     })];
             });
