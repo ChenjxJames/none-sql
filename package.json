@@ -1,22 +1,21 @@
 {
   "name": "none-sql-dev",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "description": "",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "tsc & copy \"readme.md\" \"./dist/\"",
-    "test": "tsc & copy \"readme.md\" \"./dist/\" && node ./dist/test/test.js",
-    "test-pool": "tsc & copy \"readme.md\" \"./dist/\" && node ./dist/test/test_pool.js"
+    "build": "tsc & copy \"readme.md\" \"./dist/\" & copy \"changes.md\" \"./dist/\"",
+    "test": "jest --collectCoverage"
   },
   "author": {
-    "name" : "James Chen", 
-    "email" : "james@chenjx.com.cn", 
-    "url" : "http://chenjianxiong.cn/" 
+    "name": "James Chen",
+    "email": "james@chenjx.com.cn",
+    "url": "http://chenjianxiong.cn/"
   },
-  "repository": { 
-    "type" : "git", 
-    "url" : "git+https://github.com/ChenjxJames/none-sql.git"
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ChenjxJames/none-sql.git"
   },
   "homepage": "https://github.com/ChenjxJames/none-sql",
   "bugs": {
@@ -24,7 +23,13 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@types/mysql": "^2.15.7",
     "mysql": "^2.17.1"
+  },
+  "devDependencies": {
+    "@types/jest": "^24.0.23",
+    "@types/mysql": "^2.15.8",
+    "jest": "^24.9.0",
+    "ts-jest": "^24.2.0",
+    "typescript": "^3.7.3"
   }
 }

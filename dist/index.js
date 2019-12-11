@@ -117,20 +117,41 @@ var Connection = (function () {
                 return [2, new Promise(function (resolve, reject) {
                         _this.connection.beginTransaction(function (transactionErr) {
                             if (transactionErr) {
-                                reject({ flag: true, message: 'The transaction is failed.', info: transactionErr });
+                                reject({ flag: false, message: 'The transaction is failed.', info: transactionErr });
                             }
-                            else {
-                                try {
-                                    func;
-                                    _this.connection.commit();
-                                    resolve({ flag: true, message: 'Transaction committed.' });
-                                }
-                                catch (err) {
-                                    _this.connection.rollback(function () {
-                                        reject({ flag: true, message: 'The transaction is failed.', info: err });
-                                    });
-                                }
+                            try {
+                                func();
+                                _this.connection.commit();
+                                resolve({ flag: true, message: 'Transaction committed.' });
                             }
+                            catch (err) {
+                                _this.connection.rollback(function () {
+                                    reject({ flag: false, message: 'The transaction is failed.', info: err });
+                                });
+                            }
+                        });
+                    })];
+            });
+        });
+    };
+    Connection.prototype.query = function (sql, args) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _this = this;
+            return __generator(this, function (_a) {
+                return [2, new Promise(function (resolve, reject) {
+                        _this.connection.query(sql, args, function (err, result, fields) {
+                            if (err) {
+                                reject({ flag: false, message: 'Query failed.', info: err });
+                            }
+                            if (result.length > 0) {
+                                var data_1 = [];
+                                result.forEach(function (row) {
+                                    var item = __rest(row, []);
+                                    data_1.push(item);
+                                });
+                                resolve({ flag: true, message: 'Query successful', info: data_1 });
+                            }
+                            resolve({ flag: true, message: 'Query successful', info: result });
                         });
                     })];
             });
@@ -138,67 +159,34 @@ var Connection = (function () {
     };
     Connection.prototype.get = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var _this = this;
+            var sql;
             return __generator(this, function (_a) {
-                return [2, new Promise(function (resolve, reject) {
-                        var sql = "SELECT * FROM ?? " + _this.sqlStrWhere + _this.sqlStrOrderBy;
-                        _this.connection.query(sql, [_this.tableName], function (err, rows, fields) {
-                            if (err) {
-                                reject({ flag: true, message: 'The query is failed.', info: err });
-                            }
-                            else {
-                                var data_1 = [];
-                                rows.forEach(function (row) {
-                                    var item = __rest(row, []);
-                                    data_1.push(item);
-                                });
-                                resolve({ flag: true, message: 'The query is successful.', info: data_1 });
-                            }
-                        });
-                    })];
+                sql = "SELECT * FROM ?? " + this.sqlStrWhere + this.sqlStrOrderBy;
+                return [2, this.query(sql, [this.tableName])];
             });
         });
     };
     Connection.prototype.delete = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var _this = this;
+            var sql;
             return __generator(this, function (_a) {
-                return [2, new Promise(function (resolve, reject) {
-                        var sql = "DELETE FROM ?? " + _this.sqlStrWhere;
-                        _this.connection.query(sql, [_this.tableName], function (err, rows, fields) {
-                            if (err) {
-                                reject({ flag: true, message: 'Delete is failed.', info: err });
-                            }
-                            else {
-                                resolve({ flag: true, message: 'Delete is successful.' });
-                            }
-                        });
-                    })];
+                sql = "DELETE FROM ?? " + this.sqlStrWhere;
+                return [2, this.query(sql, [this.tableName])];
             });
         });
     };
     Connection.prototype.update = function (obj) {
         return __awaiter(this, void 0, void 0, function () {
-            var _this = this;
+            var sql;
             return __generator(this, function (_a) {
-                return [2, new Promise(function (resolve, reject) {
-                        var sql = "UPDATE ?? SET ?" + _this.sqlStrWhere;
-                        _this.connection.query(sql, [_this.tableName, obj], function (err, rows, fields) {
-                            if (err) {
-                                reject({ flag: true, message: 'Update is failed.', info: err });
-                            }
-                            else {
-                                resolve({ flag: true, message: 'Update is successful.' });
-                            }
-                        });
-                    })];
+                sql = "UPDATE ?? SET ?" + this.sqlStrWhere;
+                return [2, this.query(sql, [this.tableName, obj])];
             });
         });
     };
     Connection.prototype.add = function (rows) {
         return __awaiter(this, void 0, void 0, function () {
             var keys, rowValues, sql, _i, rows_1, row;
-            var _this = this;
             return __generator(this, function (_a) {
                 keys = Object.keys(rows[0]);
                 rowValues = [];
@@ -209,16 +197,7 @@ var Connection = (function () {
                     rowValues.push(Object.values(row));
                 }
                 sql = sql.slice(0, -1);
-                return [2, new Promise(function (resolve, reject) {
-                        _this.connection.query(sql, [_this.tableName, keys].concat(rowValues), function (err, results, fields) {
-                            if (err) {
-                                reject({ flag: true, message: 'Add data is failed.', info: err });
-                            }
-                            else {
-                                resolve({ flag: true, message: 'Add data is successful', info: results });
-                            }
-                        });
-                    })];
+                return [2, this.query(sql, [this.tableName, keys].concat(rowValues))];
             });
         });
     };
@@ -246,7 +225,7 @@ var DB = (function (_super) {
                 return [2, new Promise(function (resolve, reject) {
                         _this.connection.end(function (err) {
                             if (err) {
-                                reject({ flag: true, message: 'Connection close failed.', info: err });
+                                reject({ flag: false, message: 'Connection close failed.', info: err });
                             }
                             else {
                                 resolve({ flag: true, message: 'Connection closed.' });
@@ -292,7 +271,7 @@ var Pool = (function (_super) {
                 return [2, new Promise(function (resolve, reject) {
                         _this.pool.end(function (err) {
                             if (err) {
-                                reject({ flag: true, message: 'Connection close failed.', info: err });
+                                reject({ flag: false, message: 'Connection close failed.', info: err });
                             }
                             else {
                                 resolve({ flag: true, message: 'Connection closed.' });

@@ -14,6 +14,7 @@ declare class Connection {
     orWhere(obj: any): Connection;
     orderBy(obj: any): Connection;
     transaction(func: () => void): Promise<Result>;
+    query(sql: string, args?: any[]): Promise<Result>;
     get(): Promise<Result>;
     delete(): Promise<Result>;
     update(obj: any): Promise<Result>;

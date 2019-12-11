@@ -29,7 +29,6 @@ class Connection {
   where(obj: any): Connection {
     this.sqlStrWhere = ' WHERE (';
     if (Object.keys(obj).length) {
-
       for (const key in obj) {
         this.sqlStrWhere += key + '=? and ';
       }
@@ -37,7 +36,6 @@ class Connection {
       this.sqlStrWhere += ')';
       this.sqlStrWhere = mysql.format(this.sqlStrWhere, [...Object.values(obj)])
     }
-
     return this;
   }
 
@@ -51,7 +49,6 @@ class Connection {
       this.sqlStrWhere += ')';
       this.sqlStrWhere = mysql.format(this.sqlStrWhere, [...Object.values(obj)])
     }
-
     return this;
   }
 
@@ -63,7 +60,6 @@ class Connection {
       }
       this.sqlStrOrderBy = this.sqlStrOrderBy.slice(0, -2);
     }
-
     return this;
   }
 
@@ -71,65 +67,53 @@ class Connection {
     return new Promise<Result>((resolve, reject) => {
       this.connection.beginTransaction((transactionErr: any) => {
         if (transactionErr) {
-          reject({ flag: true, message: 'The transaction is failed.', info: transactionErr });
-        } else {
-          try {
-            func;
-            this.connection.commit();
-            resolve({ flag: true, message: 'Transaction committed.' });
-          } catch (err) {
-            this.connection.rollback(() => {
-              reject({ flag: true, message: 'The transaction is failed.', info: err });
-            });
-          }
+          reject({ flag: false, message: 'The transaction is failed.', info: transactionErr });
+        }
+        try {
+          func();
+          this.connection.commit();
+          resolve({ flag: true, message: 'Transaction committed.' });
+        } catch (err) {
+          this.connection.rollback(() => {
+            reject({ flag: false, message: 'The transaction is failed.', info: err });
+          });
         }
       });
     });
-
   }
 
-  async get(): Promise<Result> {
+  async query(sql: string, args?: any[]): Promise<Result> {
     return new Promise((resolve, reject) => {
-      let sql = "SELECT * FROM ?? " + this.sqlStrWhere + this.sqlStrOrderBy;
-      this.connection.query(sql, [this.tableName], function (err: any, rows: any[], fields: any) {
+      this.connection.query(sql, args, function (err: any, result: any, fields: any) {
         if (err) {
-          reject({ flag: true, message: 'The query is failed.', info: err });
-        } else {
+          reject({ flag: false, message: 'Query failed.', info: err });
+        }
+        if (result.length > 0) {
           let data: any[] = [];
-          rows.forEach((row) => {
+          result.forEach((row: any) => {
             let { ...item } = row;
             data.push(item);
           })
-          resolve({ flag: true, message: 'The query is successful.', info: data });
+          resolve({ flag: true, message: 'Query successful', info: data });
         }
+        resolve({ flag: true, message: 'Query successful', info: result });
       });
     });
+  }
+
+  async get(): Promise<Result> {
+    let sql = "SELECT * FROM ?? " + this.sqlStrWhere + this.sqlStrOrderBy;
+    return this.query(sql, [this.tableName]);
   }
 
   async delete(): Promise<Result> {
-    return new Promise((resolve, reject) => {
-      let sql = "DELETE FROM ?? " + this.sqlStrWhere;
-      this.connection.query(sql, [this.tableName], function (err: any, rows: any[], fields: any) {
-        if (err) {
-          reject({ flag: true, message: 'Delete is failed.', info: err });
-        } else {
-          resolve({ flag: true, message: 'Delete is successful.' });
-        }
-      });
-    });
+    let sql = "DELETE FROM ?? " + this.sqlStrWhere;
+    return this.query(sql, [this.tableName]);
   }
 
   async update(obj: any): Promise<Result> {
-    return new Promise((resolve, reject) => {
-      let sql = "UPDATE ?? SET ?" + this.sqlStrWhere;
-      this.connection.query(sql, [this.tableName, obj], function (err: any, rows: any[], fields: any) {
-        if (err) {
-          reject({ flag: true, message: 'Update is failed.', info: err });
-        } else {
-          resolve({ flag: true, message: 'Update is successful.' });
-        }
-      });
-    });
+    let sql = "UPDATE ?? SET ?" + this.sqlStrWhere;
+    return this.query(sql, [this.tableName, obj]);
   }
 
   async add(rows: any[]): Promise<Result> {
@@ -141,16 +125,7 @@ class Connection {
       rowValues.push(Object.values(row));
     }
     sql = sql.slice(0, -1);
-
-    return new Promise((resolve, reject) => {
-      this.connection.query(sql, [this.tableName, keys, ...rowValues], function (err: any, results: any, fields: any) {
-        if (err) {
-          reject({ flag: true, message: 'Add data is failed.', info: err });
-        } else {
-          resolve({ flag: true, message: 'Add data is successful', info: results });
-        }
-      });
-    });
+    return this.query(sql, [this.tableName, keys, ...rowValues]);
   }
 }
 
@@ -167,16 +142,13 @@ export class DB extends Connection {
     this.connection.connect();
   }
 
-  
-
   async close(): Promise<Result> {
     return new Promise((resolve, reject) => {
       this.connection.end((err: any) => {
         if (err) {
-          reject({ flag: true, message: 'Connection close failed.', info: err });
-        } else {
-          resolve({ flag: true, message: 'Connection closed.' });
+          reject({ flag: false, message: 'Connection close failed.', info: err });
         }
+        resolve({ flag: true, message: 'Connection closed.' });
       });
     });
   }
@@ -211,10 +183,9 @@ export class Pool extends Connection{
     return new Promise((resolve, reject) => {
       this.pool.end((err: any) => {
         if (err) {
-          reject({ flag: true, message: 'Connection close failed.', info: err });
-        } else {
-          resolve({ flag: true, message: 'Connection closed.' });
+          reject({ flag: false, message: 'Connection close failed.', info: err });
         }
+        resolve({ flag: true, message: 'Connection closed.' });
       });
     });
   }
