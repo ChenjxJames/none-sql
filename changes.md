@@ -11,3 +11,7 @@ you spot any mistakes.
 * Add jest 
 * pending-repair
   * transaction
+
+## v1.2.1 (2019-12-12)
+
+* Fix a bug about transaction

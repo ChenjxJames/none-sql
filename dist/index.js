@@ -123,21 +123,33 @@ var Connection = (function () {
             var _this = this;
             return __generator(this, function (_a) {
                 return [2, new Promise(function (resolve, reject) {
-                        _this.connection.beginTransaction(function (transactionErr) {
-                            if (transactionErr) {
-                                reject({ flag: false, message: 'The transaction is failed.', info: transactionErr });
-                            }
-                            try {
-                                func();
-                                _this.connection.commit();
-                                resolve({ flag: true, message: 'Transaction committed.' });
-                            }
-                            catch (err) {
-                                _this.connection.rollback(function () {
-                                    reject({ flag: false, message: 'The transaction is failed.', info: err });
-                                });
-                            }
-                        });
+                        _this.connection.beginTransaction(function (transactionErr) { return __awaiter(_this, void 0, void 0, function () {
+                            var err_1;
+                            return __generator(this, function (_a) {
+                                switch (_a.label) {
+                                    case 0:
+                                        if (transactionErr) {
+                                            reject({ flag: false, message: 'Transaction failed.', info: transactionErr });
+                                        }
+                                        _a.label = 1;
+                                    case 1:
+                                        _a.trys.push([1, 3, , 4]);
+                                        return [4, func()];
+                                    case 2:
+                                        _a.sent();
+                                        this.connection.commit();
+                                        resolve({ flag: true, message: 'Transaction successful.' });
+                                        return [3, 4];
+                                    case 3:
+                                        err_1 = _a.sent();
+                                        this.connection.rollback(function () {
+                                            reject({ flag: false, message: 'Transaction failed.', info: err_1 });
+                                        });
+                                        return [3, 4];
+                                    case 4: return [2];
+                                }
+                            });
+                        }); });
                     })];
             });
         });
@@ -151,7 +163,7 @@ var Connection = (function () {
                             if (err) {
                                 reject({ flag: false, message: 'Query failed.', info: err });
                             }
-                            if (result.length > 0) {
+                            if (result instanceof Array) {
                                 var data_1 = [];
                                 result.forEach(function (row) {
                                     var item = __rest(row, []);
@@ -235,7 +247,7 @@ var DB = (function (_super) {
                             if (err) {
                                 reject({ flag: false, message: 'Connection close failed.', info: err });
                             }
-                            resolve({ flag: true, message: 'Connection closed.' });
+                            resolve({ flag: true, message: 'Connection close successful.' });
                         });
                     })];
             });
@@ -277,9 +289,9 @@ var Pool = (function (_super) {
                 return [2, new Promise(function (resolve, reject) {
                         _this.pool.end(function (err) {
                             if (err) {
-                                reject({ flag: false, message: 'Connection close failed.', info: err });
+                                reject({ flag: false, message: 'Connection pool close failed.', info: err });
                             }
-                            resolve({ flag: true, message: 'Connection closed.' });
+                            resolve({ flag: true, message: 'Connection pool close successful.' });
                         });
                     })];
             });
