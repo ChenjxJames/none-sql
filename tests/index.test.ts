@@ -1,5 +1,4 @@
 import { DB, Pool } from '../src/index';
-import { updateExpression } from '@babel/types';
 
 declare global {
   namespace jest {
@@ -27,10 +26,22 @@ expect.extend({
   },
 });
 
+var db;
+var pool;
 
+beforeAll(() => {
+  db = new DB('team_cooperation', 'root', '', 'localhost'); 
+  pool = new Pool('team_cooperation', 'root', '', 'localhost', 20);
+  db.connect('users').add([{username:'chenjx01',password: '123'},{username:'chenjx02',password: '123'}]);
+});
+
+afterAll(() => {
+  db.connect('users').where({password: '123'}).orWhere({password: '123456'}).delete();
+  db.close();
+  pool.close();
+});
 
 describe('my DB', () => {
-  const db = new DB('team_cooperation', 'root', '', 'localhost');
   test('get function test', async () => {
     const result = await db.connect('users').get();
     expect(result).toBeGetData();
@@ -42,12 +53,12 @@ describe('my DB', () => {
   });
 
   test('where function test', async () => {
-    const result = await db.connect('users').where({username: 'nash789'}).orWhere({username: 'nash456'}).orderBy({username: true, password: false}).get();
+    const result = await db.connect('users').where({username: 'chenjx01'}).orWhere({username: 'chenjx02'}).orderBy({username: true, password: false}).get();
     expect(result).toBeGetData();
   });
 
   test('get and orderBy and where function test', async () => {
-    const result = await db.connect('users').where({username: 'nash789'}).orWhere({username: 'nash456'}).orderBy({username: true, password: false}).get();
+    const result = await db.connect('users').where({username: 'chenjx01'}).orWhere({username: 'chenjx02'}).orderBy({username: true, password: false}).get();
     expect(result).toBeGetData();
   });
 
@@ -63,50 +74,45 @@ describe('my DB', () => {
     expect(result).toBeGetData();
   });
 
-  // test('transaction function test', async () => {
-  //   try {
-  //     db.transaction(async () => {
-  //       await db.connect('users').add([{username: 'chenjx1', password: '123'}]);
-  //       await db.connect('users').add([{username: 'chenjx123', password: '123456'}]);
-  //     });
-  //   } catch (err) {
-  //     expect(err.flag).toBeFalsy();
-  //   }
-  //   try {
-  //     db.transaction(async () => {
-  //       await db.connect('users').add([{username: 'chenjx2', password: '123'}]);
-  //       await db.connect('users').add([{username: 'chenjx3', password: '124'}]);
-  //     });
-  //   } catch (err) {
-  //     expect(err.flag).toBeFalsy();
-  //   }
-  //   const result1 = await db.connect('users').where({username: 'chenjx1', password: '123'}).get();
-  //   const result2 = await db.connect('users').where({username: 'chenjx123', password: '123'}).get();
-  //   const result3 = await db.connect('users').where({username: 'chenjx2', password: '123'}).get();
-  //   const result4 = await db.connect('users').where({username: 'chenjx3', password: '124'}).get();
-  //   expect(result1.info).not.toBeGetData();
-  //   expect(result2.info).not.toBeGetData();
-  //   expect(result3.info).toBeGetData();
-  //   expect(result4.info).toBeGetData();
-  // });
+  test('transaction function test', async () => {
+    try {
+      await db.transaction(async () => {
+        await db.connect('users').add([{username: 'chenjx1', password: '123'}]);
+        await db.connect('users').add([{username: 'chenjx123', password: '123456'}]);
+      });
+    } catch (err) {
+      expect(err.flag).toBeFalsy();
+    }
+    try {
+      await db.transaction(async () => {
+        await db.connect('users').add([{username: 'chenjx2', password: '123'}]);
+        await db.connect('users').add([{username: 'chenjx3', password: '123'}]);
+      });
+    } catch (err) {
+      expect(err.flag).toBeFalsy();
+    }
+    const result1 = await db.connect('users').where({username: 'chenjx1', password: '123'}).get();
+    const result2 = await db.connect('users').where({username: 'chenjx123', password: '123456'}).get();
+    const result3 = await db.connect('users').where({username: 'chenjx2', password: '123'}).get();
+    const result4 = await db.connect('users').where({username: 'chenjx3', password: '123'}).get();
+    expect(result1).not.toBeGetData();
+    expect(result2).toBeGetData();
+    expect(result3).toBeGetData();
+    expect(result4).toBeGetData();
+  });
 
   test('delete function test', async () => {
-    await db.connect('users').where({username: 'chenjx1'}).delete();
-    await db.connect('users').where({username: 'chenjx2'}).delete();
-    await db.connect('users').where({username: 'chenjx3'}).delete();
-    await db.connect('users').where({username: 'chenjx123', password: '123456'}).delete();
-    const result = await db.connect('users').where({username: 'chenjx123', password: '123456'}).get();
+    await db.connect('users').where({username: 'chenjx123'}).delete();
+    const result = await db.connect('users').where({username: 'chenjx123'}).get();
     expect(result).not.toBeGetData();
-    db.close();
   });
 });
 
 
 describe('my Pool', () => {
-  const pool = new Pool('team_cooperation', 'root', '', 'localhost', 20);
   test('get and orderBy and where function test', async () => {
     const connection = await pool.getConnection();
-    const result = await connection.connect('users').where({username: 'nash789'}).orWhere({username: 'nash456'}).orderBy({username: true, password: false}).get();
+    const result = await connection.connect('users').where({username: 'chenjx01'}).orWhere({username: 'chenjx02'}).orderBy({username: true, password: false}).get();
     expect(result).toBeGetData();
     connection.connection.release();
   });
@@ -133,7 +139,6 @@ describe('my Pool', () => {
     const result = await connection.connect('users').where({username: 'chenjx0', password: '123456'}).get();
     expect(result).not.toBeGetData();
     connection.connection.release();
-    pool.close();
   });
 
 });

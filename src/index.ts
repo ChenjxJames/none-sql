@@ -65,17 +65,17 @@ class Connection {
 
   async transaction(func: () => void): Promise<Result> {
     return new Promise<Result>((resolve, reject) => {
-      this.connection.beginTransaction((transactionErr: any) => {
+      this.connection.beginTransaction(async (transactionErr: any) => {
         if (transactionErr) {
-          reject({ flag: false, message: 'The transaction is failed.', info: transactionErr });
+          reject({ flag: false, message: 'Transaction failed.', info: transactionErr });
         }
         try {
-          func();
+          await func();
           this.connection.commit();
-          resolve({ flag: true, message: 'Transaction committed.' });
+          resolve({ flag: true, message: 'Transaction successful.' });
         } catch (err) {
           this.connection.rollback(() => {
-            reject({ flag: false, message: 'The transaction is failed.', info: err });
+            reject({ flag: false, message: 'Transaction failed.', info: err });
           });
         }
       });
@@ -88,7 +88,7 @@ class Connection {
         if (err) {
           reject({ flag: false, message: 'Query failed.', info: err });
         }
-        if (result.length > 0) {
+        if (result instanceof Array) {
           let data: any[] = [];
           result.forEach((row: any) => {
             let { ...item } = row;
@@ -148,7 +148,7 @@ export class DB extends Connection {
         if (err) {
           reject({ flag: false, message: 'Connection close failed.', info: err });
         }
-        resolve({ flag: true, message: 'Connection closed.' });
+        resolve({ flag: true, message: 'Connection close successful.' });
       });
     });
   }
@@ -183,9 +183,9 @@ export class Pool extends Connection{
     return new Promise((resolve, reject) => {
       this.pool.end((err: any) => {
         if (err) {
-          reject({ flag: false, message: 'Connection close failed.', info: err });
+          reject({ flag: false, message: 'Connection pool close failed.', info: err });
         }
-        resolve({ flag: true, message: 'Connection closed.' });
+        resolve({ flag: true, message: 'Connection pool close successful.' });
       });
     });
   }
