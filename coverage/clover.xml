@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1576153955276" clover="3.2.0">
-  <project timestamp="1576153955277" name="All files">
+<coverage generated="1576765055901" clover="3.2.0">
+  <project timestamp="1576765055901" name="All files">
     <metrics statements="106" coveredstatements="98" conditionals="34" coveredconditionals="21" methods="32" coveredmethods="30" elements="172" coveredelements="149" complexity="0" loc="106" ncloc="106" packages="1" files="1" classes="1"/>
     <file name="index.ts" path="D:\team_cooperation\middleware\none-sql\src\index.ts">
       <metrics statements="106" coveredstatements="98" conditionals="34" coveredconditionals="21" methods="32" coveredmethods="30"/>
@@ -58,8 +58,8 @@
       <line num="91" count="26" type="cond" truecount="2" falsecount="0"/>
       <line num="92" count="15" type="stmt"/>
       <line num="93" count="15" type="stmt"/>
-      <line num="94" count="27" type="stmt"/>
-      <line num="95" count="27" type="stmt"/>
+      <line num="94" count="17" type="stmt"/>
+      <line num="95" count="17" type="stmt"/>
       <line num="97" count="15" type="stmt"/>
       <line num="99" count="26" type="stmt"/>
       <line num="104" count="1" type="stmt"/>

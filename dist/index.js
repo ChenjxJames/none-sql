@@ -223,6 +223,7 @@ var Connection = (function () {
     };
     return Connection;
 }());
+exports.Connection = Connection;
 var DB = (function (_super) {
     __extends(DB, _super);
     function DB(database, user, password, host, isPoolConnect) {

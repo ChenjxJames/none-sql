@@ -6,7 +6,7 @@ export interface Result {
   info?: any;
 }
 
-class Connection {
+export class Connection {
   public connection: any;
   private tableName: string;
   private sqlStrWhere: string;

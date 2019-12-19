@@ -3,7 +3,7 @@ export interface Result {
     message: string;
     info?: any;
 }
-declare class Connection {
+export declare class Connection {
     connection: any;
     private tableName;
     private sqlStrWhere;
@@ -30,4 +30,3 @@ export declare class Pool extends Connection {
     getConnection(): Promise<Connection>;
     close(): Promise<Result>;
 }
-export {};
