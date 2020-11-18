@@ -16,6 +16,6 @@ you spot any mistakes.
 
 * Fix a bug about transaction
 
-## v1.2.2 (2019-12-19)
+## v1.2.1 (2020-11-18)
 
-* Export Class Connection
+* Fix a bug

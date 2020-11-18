@@ -15,3 +15,7 @@ you spot any mistakes.
 ## v1.2.1 (2019-12-12)
 
 * Fix a bug about transaction
+
+## v1.2.1 (2020-11-18)
+
+* Fix a bug
