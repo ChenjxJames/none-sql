@@ -23,3 +23,7 @@ you spot any mistakes.
 ## v1.2.3 (2020-11-12)
 
 * Fix a bug
+
+## v1.2.4 (2020-11-18)
+
+* Update changes.md
