@@ -8,7 +8,7 @@ you spot any mistakes.
 
 * Add changes.md
 * Add Connection.query(sql: string, args?: any[]);
-* Add jest 
+* Add jest
 * pending-repair
   * transaction
 
@@ -16,6 +16,10 @@ you spot any mistakes.
 
 * Fix a bug about transaction
 
-## v1.2.1 (2020-11-18)
+## v1.2.2 (2019-12-19)
+
+* Export Class Connection
+
+## v1.2.3 (2020-11-12)
 
 * Fix a bug
