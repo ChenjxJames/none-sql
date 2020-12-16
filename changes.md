@@ -27,3 +27,7 @@ you spot any mistakes.
 ## v1.2.4 (2020-11-18)
 
 * Update changes.md
+
+## v1.3.0 (2020-12-17)
+
+* Add function map underscore to camel case

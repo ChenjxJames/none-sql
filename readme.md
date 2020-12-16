@@ -14,14 +14,25 @@
   import { DB, Pool } from 'none-sql';
   ```
 
-* 创建数据库对象  
+* 配置
   ```javascript
-  const db = new DB(database: string, user: string, password: string, host = 'localhost');
+    interface IConfig {
+      mapUnderscoreToCamelCase: boolean;  // 返回数据字段自动下划线转驼峰，查询数据字段自动驼峰转下划线
+    }
+
+    const configDefault: IConfig = {
+      mapUnderscoreToCamelCase: false,
+    };
+  ```
+
+* 创建数据库对象
+  ```javascript
+  const db = new DB(database: string, user: string, password: string, host = 'localhost', config: IConfig = configDefault);
   ```
 
 * 创建连接池
   ```javascript
-  const pool = new Pool(database: string, user: string, password: string, host = 'localhost', connectionLimit = 10);
+  const pool = new Pool(database: string, user: string, password: string, host = 'localhost', connectionLimit = 10, config: IConfig = configDefault);
   ```
   * 获取数据库连接
     ```javascript
@@ -39,65 +50,65 @@
   ```
 
 * 基本操作  
-  * 查——获取users表里所有记录 
-    ```javascript 
-    db.connect('tableName').get();  
+  * 查——获取users表里所有记录
+    ```javascript
+    db.connect('tableName').get();
     ```
     ```javascript
-    return Promise<Result> 
+    return Promise<Result>
     ```
   * 条件查——获取users表里city属性为shanghai的记录   
     .where()参数为条件对象如{ username: 'james', age: 20 }  
-    该对象内的条件为且的关系，条件为或的关系请用.where().orWhere()    
+    该对象内的条件为且的关系，条件为或的关系请用.where().orWhere()
     ```javascript
-    db.connect('tableName').where({city: 'shanghai'}).get();  
+    db.connect('tableName').where({city: 'shanghai'}).get();
     ```
-    ```javascript
-    return Promise<Result>  
-    ```
-  * 增——向users表里添加若干条记录  
-    ```javascript
-    db.connect('tableName').add(any[]);  
-    ```
-    ```javascript
-    return Promise<Result>       
-    ```             
-  * 删——删除users表里的若干条记录  
-    ```javascript
-    db.connect('tableName').where().delete();  
-    ```
-    ```javascript
-    return Promise<Result>          
-    ```        
-  * 改——更改users表里的若干条记录  
-    ```javascript
-    db.connect('tableName').where().update({city: 'shanghai'});
-    ```  
     ```javascript
     return Promise<Result>
-    ``` 
-  * 排序——  
+    ```
+  * 增——向users表里添加若干条记录
     ```javascript
-    db.connect('tableName').orderBy({password: true, username: false}).get();  
+    db.connect('tableName').add(any[]);
     ```
     ```javascript
-    return Promise<Result>  
+    return Promise<Result>
+    ```
+  * 删——删除users表里的若干条记录
+    ```javascript
+    db.connect('tableName').where().delete();
+    ```
+    ```javascript
+    return Promise<Result>
+    ```
+  * 改——更改users表里的若干条记录
+    ```javascript
+    db.connect('tableName').where().update({city: 'shanghai'});
+    ```
+    ```javascript
+    return Promise<Result>
+    ```
+  * 排序——
+    ```javascript
+    db.connect('tableName').orderBy({password: true, username: false}).get();
+    ```
+    ```javascript
+    return Promise<Result>
     ```
   上式含义为按password将结果升序排序，按username将结果降序排序，这里password的优先级高于username
 
-* 事务操作  
+* 事务操作
   ```javascript
-  db.transaction(() => {  
-      //对数据库的操作  
-      db.connect('tableName').add(any[]);  
-      db.connect('tableName').where().delete();  
+  db.transaction(() => {
+      //对数据库的操作
+      db.connect('tableName').add(any[]);
+      db.connect('tableName').where().delete();
   })
   ```
 
-* 嵌套查询  
+* 嵌套查询
   ```javascript
-  db.connect('tableName1').where({  
-      userId: db.connect('tableName2').where({name: 'james'}).get()[0].id  
+  db.connect('tableName1').where({
+      userId: db.connect('tableName2').where({name: 'james'}).get()[0].id
   })
   ```
 

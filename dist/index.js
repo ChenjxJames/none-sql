@@ -72,13 +72,32 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Pool = exports.DB = exports.Connection = void 0;
 var mysql_1 = __importDefault(require("mysql"));
+var transform_1 = require("./lib/transform");
+var configDefault = {
+    mapUnderscoreToCamelCase: false,
+};
 var Connection = (function () {
-    function Connection(connection) {
+    function Connection(connection, config) {
         this.connection = connection;
         this.tableName = '';
         this.sqlStrWhere = '';
         this.sqlStrOrderBy = '';
+        this.config = config || configDefault;
     }
+    Connection.toCamelCase = function (obj) {
+        var camelCaseObj = {};
+        Object.keys(obj).forEach(function (key) {
+            camelCaseObj[transform_1.toCamelCase(key)] = obj[key];
+        });
+        return camelCaseObj;
+    };
+    Connection.toMapUnderscore = function (obj) {
+        var mapUnderscoreObj = {};
+        Object.keys(obj).forEach(function (key) {
+            mapUnderscoreObj[transform_1.toMapUnderscore(key)] = obj[key];
+        });
+        return mapUnderscoreObj;
+    };
     Connection.prototype.connect = function (tableName) {
         this.sqlStrWhere = '';
         this.sqlStrOrderBy = '';
@@ -89,6 +108,7 @@ var Connection = (function () {
         this.sqlStrWhere = ' WHERE (';
         if (Object.keys(obj).length) {
             for (var key in obj) {
+                key = this.config.mapUnderscoreToCamelCase ? transform_1.toMapUnderscore(key) : key;
                 this.sqlStrWhere += key + '=? and ';
             }
             this.sqlStrWhere = this.sqlStrWhere.slice(0, -4);
@@ -101,6 +121,7 @@ var Connection = (function () {
         if (Object.keys(obj).length && this.sqlStrWhere) {
             this.sqlStrWhere += ' OR (';
             for (var key in obj) {
+                key = this.config.mapUnderscoreToCamelCase ? transform_1.toMapUnderscore(key) : key;
                 this.sqlStrWhere += key + '=? and ';
             }
             this.sqlStrWhere = this.sqlStrWhere.slice(0, -4);
@@ -113,7 +134,8 @@ var Connection = (function () {
         if (Object.keys(obj).length) {
             this.sqlStrOrderBy = ' ORDER BY ';
             for (var key in obj) {
-                this.sqlStrOrderBy += ' ' + key + ' ' + (obj[key] ? 'ASC' : 'DESC') + ', ';
+                var orderKey = this.config.mapUnderscoreToCamelCase ? transform_1.toMapUnderscore(key) : key;
+                this.sqlStrOrderBy += ' ' + orderKey + ' ' + (obj[key] ? 'ASC' : 'DESC') + ', ';
             }
             this.sqlStrOrderBy = this.sqlStrOrderBy.slice(0, -2);
         }
@@ -160,6 +182,7 @@ var Connection = (function () {
             var _this = this;
             return __generator(this, function (_a) {
                 return [2, new Promise(function (resolve, reject) {
+                        var that = _this;
                         _this.connection.query(sql, args, function (err, result, fields) {
                             if (err) {
                                 reject({ flag: false, message: 'Query failed.', info: err });
@@ -168,7 +191,7 @@ var Connection = (function () {
                                 var data_1 = [];
                                 result.forEach(function (row) {
                                     var item = __rest(row, []);
-                                    data_1.push(item);
+                                    data_1.push(that.config.mapUnderscoreToCamelCase ? Connection.toCamelCase(item) : item);
                                 });
                                 resolve({ flag: true, message: 'Query successful', info: data_1 });
                             }
@@ -200,6 +223,7 @@ var Connection = (function () {
         return __awaiter(this, void 0, void 0, function () {
             var sql;
             return __generator(this, function (_a) {
+                obj = this.config.mapUnderscoreToCamelCase ? Connection.toMapUnderscore(obj) : obj;
                 sql = "UPDATE ?? SET ?" + this.sqlStrWhere;
                 return [2, this.query(sql, [this.tableName, obj])];
             });
@@ -210,6 +234,7 @@ var Connection = (function () {
             var keys, rowValues, sql, _i, rows_1, row;
             return __generator(this, function (_a) {
                 keys = Object.keys(rows[0]);
+                keys = this.config.mapUnderscoreToCamelCase ? keys.map(function (key) { return transform_1.toMapUnderscore(key); }) : keys;
                 rowValues = [];
                 sql = "INSERT INTO ?? (??) VALUES ";
                 for (_i = 0, rows_1 = rows; _i < rows_1.length; _i++) {
@@ -227,16 +252,15 @@ var Connection = (function () {
 exports.Connection = Connection;
 var DB = (function (_super) {
     __extends(DB, _super);
-    function DB(database, user, password, host, isPoolConnect) {
+    function DB(database, user, password, host, config) {
         if (host === void 0) { host = 'localhost'; }
-        if (isPoolConnect === void 0) { isPoolConnect = false; }
-        var _this = _super.call(this) || this;
-        _this.connection = mysql_1.default.createConnection({
+        if (config === void 0) { config = configDefault; }
+        var _this = _super.call(this, mysql_1.default.createConnection({
             host: host,
             user: user,
             password: password,
             database: database
-        });
+        }), config) || this;
         _this.connection.connect();
         return _this;
     }
@@ -260,10 +284,11 @@ var DB = (function (_super) {
 exports.DB = DB;
 var Pool = (function (_super) {
     __extends(Pool, _super);
-    function Pool(database, user, password, host, connectionLimit) {
+    function Pool(database, user, password, host, connectionLimit, config) {
         if (host === void 0) { host = 'localhost'; }
         if (connectionLimit === void 0) { connectionLimit = 10; }
-        var _this = _super.call(this) || this;
+        if (config === void 0) { config = configDefault; }
+        var _this = _super.call(this, null, config) || this;
         _this.pool = mysql_1.default.createPool({
             connectionLimit: connectionLimit,
             host: host,
@@ -280,7 +305,7 @@ var Pool = (function (_super) {
                 if (err) {
                     reject(err);
                 }
-                resolve(new Connection(connection));
+                resolve(new Connection(connection, _this.config));
             });
         });
     };
