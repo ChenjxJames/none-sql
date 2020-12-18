@@ -247,6 +247,9 @@ var Connection = (function () {
             });
         });
     };
+    Connection.prototype.release = function () {
+        this.connection.release();
+    };
     return Connection;
 }());
 exports.Connection = Connection;

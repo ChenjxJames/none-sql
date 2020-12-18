@@ -31,3 +31,7 @@ you spot any mistakes.
 ## v1.3.0 (2020-12-17)
 
 * Add function map underscore to camel case
+
+## v1.3.1 (2020-12-19)
+
+* Add function release by class Connection

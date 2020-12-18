@@ -161,6 +161,11 @@ export class Connection {
     sql = sql.slice(0, -1);
     return this.query(sql, [this.tableName, keys, ...rowValues]);
   }
+
+  // 释放连接回数据库连接池，
+  release() {
+    this.connection.release();
+  }
 }
 
 export class DB extends Connection {

@@ -38,8 +38,13 @@
     ```javascript
     const result = pool.getConnection();
     result.then((connection) => {
-      const data = connection.connect('tableName').get();
-      connection.connection.release();  // 使用完后将该数据库连接还给连接池
+      connection.connect('tableName').get().then((data) => {
+        console.log(data);
+        connection.release();  // 使用完后将该数据库连接还给连接池
+      }).catch((err) => {
+        console.error(err);
+        connection.release();  // 使用完后将该数据库连接还给连接池
+      });
     });
     ```
 

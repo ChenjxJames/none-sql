@@ -26,6 +26,7 @@ export declare class Connection {
     delete(): Promise<IResult>;
     update(obj: any): Promise<IResult>;
     add(rows: any[]): Promise<IResult>;
+    release(): void;
 }
 export declare class DB extends Connection {
     constructor(database: string, user: string, password: string, host?: string, config?: IConfig);
