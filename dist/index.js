@@ -255,11 +255,11 @@ var Connection = (function () {
 exports.Connection = Connection;
 var DB = (function (_super) {
     __extends(DB, _super);
-    function DB(database, user, password, host, config) {
-        if (host === void 0) { host = 'localhost'; }
-        if (config === void 0) { config = configDefault; }
+    function DB(_a) {
+        var database = _a.database, user = _a.user, password = _a.password, _b = _a.host, host = _b === void 0 ? 'localhost' : _b, _c = _a.port, port = _c === void 0 ? 3306 : _c, _d = _a.config, config = _d === void 0 ? configDefault : _d;
         var _this = _super.call(this, mysql_1.default.createConnection({
             host: host,
+            port: port,
             user: user,
             password: password,
             database: database
@@ -287,14 +287,13 @@ var DB = (function (_super) {
 exports.DB = DB;
 var Pool = (function (_super) {
     __extends(Pool, _super);
-    function Pool(database, user, password, host, connectionLimit, config) {
-        if (host === void 0) { host = 'localhost'; }
-        if (connectionLimit === void 0) { connectionLimit = 10; }
-        if (config === void 0) { config = configDefault; }
+    function Pool(_a) {
+        var database = _a.database, user = _a.user, password = _a.password, _b = _a.host, host = _b === void 0 ? 'localhost' : _b, _c = _a.port, port = _c === void 0 ? 3306 : _c, _d = _a.connectionLimit, connectionLimit = _d === void 0 ? 10 : _d, _e = _a.config, config = _e === void 0 ? configDefault : _e;
         var _this = _super.call(this, null, config) || this;
         _this.pool = mysql_1.default.createPool({
             connectionLimit: connectionLimit,
             host: host,
+            port: port,
             user: user,
             password: password,
             database: database

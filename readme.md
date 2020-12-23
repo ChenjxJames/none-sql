@@ -27,12 +27,12 @@
 
 * 创建数据库对象
   ```javascript
-  const db = new DB(database: string, user: string, password: string, host = 'localhost', config: IConfig = configDefault);
+  const db = new DB({ database: string, user: string, password: string, host = 'localhost', port = 3306, config: IConfig = configDefault });
   ```
 
 * 创建连接池
   ```javascript
-  const pool = new Pool(database: string, user: string, password: string, host = 'localhost', connectionLimit = 10, config: IConfig = configDefault);
+  const pool = new Pool({ database: string, user: string, password: string, host = 'localhost', port = 3306, connectionLimit = 10, config: IConfig = configDefault });
   ```
   * 获取数据库连接
     ```javascript
@@ -103,10 +103,10 @@
 
 * 事务操作
   ```javascript
-  db.transaction(() => {
+  db.transaction(async () => {
       //对数据库的操作
-      db.connect('tableName').add(any[]);
-      db.connect('tableName').where().delete();
+      await db.connect('tableName').add(any[]);
+      await db.connect('tableName').where().delete();
   })
   ```
 

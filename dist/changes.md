@@ -35,3 +35,11 @@ you spot any mistakes.
 ## v1.3.1 (2020-12-19)
 
 * Add function release by class Connection
+
+## v1.3.2 (2020-12-20)
+
+* Update document about transaction
+
+## v2.0.0 (2020-12-23)
+
+* Update connect config type

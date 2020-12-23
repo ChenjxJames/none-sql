@@ -3,10 +3,27 @@ export interface IResult {
     message: string;
     info?: any;
 }
+export declare type Result = IResult;
 export interface IConfig {
     mapUnderscoreToCamelCase: boolean;
 }
-export declare type Result = IResult;
+export interface IDBConfig {
+    database: string;
+    user: string;
+    password: string;
+    host: string;
+    port: number;
+    config: IConfig;
+}
+export interface IPoolConfig {
+    database: string;
+    user: string;
+    password: string;
+    host: string;
+    port: number;
+    connectionLimit: number;
+    config: IConfig;
+}
 export declare class Connection {
     connection: any;
     private tableName;
@@ -29,12 +46,12 @@ export declare class Connection {
     release(): void;
 }
 export declare class DB extends Connection {
-    constructor(database: string, user: string, password: string, host?: string, config?: IConfig);
+    constructor({ database, user, password, host, port, config }: IDBConfig);
     close(): Promise<IResult>;
 }
 export declare class Pool extends Connection {
     pool: any;
-    constructor(database: string, user: string, password: string, host?: string, connectionLimit?: number, config?: IConfig);
+    constructor({ database, user, password, host, port, connectionLimit, config }: IPoolConfig);
     getConnection(): Promise<Connection>;
     close(): Promise<IResult>;
 }

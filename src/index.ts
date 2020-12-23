@@ -6,15 +6,35 @@ export interface IResult {
   message: string;
   info?: any;
 }
+
+export type Result = IResult;  // interface命名统一改为I开头，为了向下兼容保留Result命名的类型输出
+
 export interface IConfig {
   mapUnderscoreToCamelCase: boolean;  // 数据自动下划线转驼峰
 }
 
-export type Result = IResult;  // interface命名统一改为I开头，为了向下兼容保留Result命名的类型输出
-
 const configDefault: IConfig = {
   mapUnderscoreToCamelCase: false,
 };
+
+export interface IDBConfig {
+  database: string;
+  user: string;
+  password: string;
+  host: string;
+  port: number;
+  config: IConfig;
+}
+
+export interface IPoolConfig {
+  database: string;
+  user: string;
+  password: string;
+  host: string;
+  port: number;
+  connectionLimit: number;
+  config: IConfig;
+}
 
 export class Connection {
   public connection: any;
@@ -170,10 +190,11 @@ export class Connection {
 
 export class DB extends Connection {
 
-  constructor(database: string, user: string, password: string, host = 'localhost', config: IConfig = configDefault) {
+  constructor({ database, user, password, host = 'localhost', port = 3306, config = configDefault }: IDBConfig) {
     super(
       mysql.createConnection({
         host: host,
+        port: port,
         user: user,
         password: password,
         database: database
@@ -198,11 +219,12 @@ export class DB extends Connection {
 export class Pool extends Connection{
   pool: any;
 
-  constructor(database: string, user: string, password: string, host = 'localhost', connectionLimit = 10, config: IConfig = configDefault) {
+  constructor({ database, user, password, host = 'localhost', port = 3306, connectionLimit = 10, config = configDefault }: IPoolConfig) {
     super(null, config);
     this.pool = mysql.createPool({
       connectionLimit : connectionLimit,
       host: host,
+      port: port,
       user: user,
       password: password,
       database: database
