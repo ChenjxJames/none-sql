@@ -43,3 +43,7 @@ you spot any mistakes.
 ## v2.0.0 (2020-12-23)
 
 * Update connect config type
+
+## v2.0.1 (2021-06-19)
+
+* Update interface IDBConfig and IPoolConfig

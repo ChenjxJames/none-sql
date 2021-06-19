@@ -1,6 +1,6 @@
 {
   "name": "none-sql-dev",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -11,7 +11,7 @@
   "author": {
     "name": "James Chen",
     "email": "james@chenjx.com.cn",
-    "url": "http://chenjianxiong.cn/"
+    "url": "https://chenjianxiong.cn/"
   },
   "repository": {
     "type": "git",
