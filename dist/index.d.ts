@@ -11,18 +11,18 @@ export interface IDBConfig {
     database: string;
     user: string;
     password: string;
-    host: string;
-    port: number;
-    config: IConfig;
+    host?: string;
+    port?: number;
+    config?: IConfig;
 }
 export interface IPoolConfig {
     database: string;
     user: string;
     password: string;
-    host: string;
-    port: number;
-    connectionLimit: number;
-    config: IConfig;
+    host?: string;
+    port?: number;
+    connectionLimit?: number;
+    config?: IConfig;
 }
 export declare class Connection {
     connection: any;
